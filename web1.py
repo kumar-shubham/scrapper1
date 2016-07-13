@@ -1,7 +1,7 @@
 import requests
 import re
 from bs4 import BeautifulSoup as bs
-import json, operator
+import json, operator,sys,time
 
 url = "http://www.aliexpress.com/"
 
@@ -110,6 +110,7 @@ def getCategoryLink():
 
 def getProductLink():
     count = -1
+    timer = 0
     for link in links:
         count += 1
         sub_links1 = []
@@ -139,7 +140,7 @@ def getProductLink():
             #print " " + sub_link
             r = requests.get(sub_link)
             soup = bs(r.content, "html.parser")
-            products = soup.find_all("a",class_="product", limit=2)
+            products = soup.find_all("a",class_="product", limit=5)
             for product1 in products:
                 prod_url = product1.get("href")
                 if "http:" not in prod_url:
@@ -147,15 +148,26 @@ def getProductLink():
                     product_links.append(prod)
             
         for prod_link in product_links:
+            timer += 2.5
+            if timer % 1 == 0:
+                update_progress_bar(timer)
             #print "  aa " + prod_link
             getProductDetail(prod_link,categories[count])
 
-            
+def update_progress_bar(num):
+    percent = float(num) / 100
+    bar_length = 50
+    hashes = '#' * int(round(percent * bar_length))
+    spaces = ' ' * (bar_length - len(hashes))
+    sys.stdout.write("\rPercent Scraped: [{0}] {1}%".format(hashes + spaces, int(round(percent * 100))))
+    sys.stdout.flush()
+
 
 
 
 if __name__ == "__main__":
     
+    update_progress_bar(0)
     getCategoryLink()
     getProductLink()
     for dicts in product:
@@ -163,6 +175,8 @@ if __name__ == "__main__":
     result = json.dumps(product)
     with open("product.json", "w+") as json_file:
         json_file.write(result)
+
+    print ' Done!'
     print result
 
 
