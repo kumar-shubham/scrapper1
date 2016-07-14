@@ -18,7 +18,7 @@ cookies = {'acs_usuc_t':'acs_rt=292fb5775fcb4aa78fdbcaf9f3663308',
            }
 
 categories = ["Consumer Electronics", "Jewelry", "Watches", "Health & Beauty"]
-header = {'User-Agent': ua.chrome}
+header = {'User-Agent': ua.random}
 r = requests.get(url, headers=header,cookies=cookies)
 
 soup = bs(r.content, "html.parser")
@@ -28,7 +28,7 @@ prod_limit = 100
 sub_cat_limit = 2
 
 def getProductDetail(plink,category):
-    header = {'User-Agent': ua.chrome}
+    header = {'User-Agent': ua.random}
     try:
         s = requests.get(plink,headers=header,cookies=cookies)
     except:
